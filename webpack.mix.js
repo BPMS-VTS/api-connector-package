@@ -17,6 +17,6 @@ folder configured for publishing by default.
 mix.setPublicPath('public')
     .setResourceRoot('/vendor/api-connector/')
     .js('resources/js/package.js', 'js')
-    .js('resources/js/screen-builder-extend.js', 'js')
+    .js('resources/js/screen-extend.js', 'js')
     // .sass('resources/assets/sass/plugin.scss', 'css')
     .version()

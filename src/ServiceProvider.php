@@ -62,7 +62,7 @@ class ServiceProvider extends Provider
 
         // TEST
         Event::listen(ScreenBuilderStarting::class, function($event) {
-            $event->manager->addScript(mix('js/screen-builder-extend.js', 'vendor/api-connector'));
+            $event->manager->addScript(mix('js/screen-extend.js', 'vendor/api-connector'));
         });
 
         $this->publishes([
