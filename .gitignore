@@ -1,5 +1,9 @@
-/vendor/
-node_modules/
+vendor
+node_modules
+package-lock.json
+composer.lock
+webpack.callback.js
+public/*
 npm-debug.log
 yarn-error.log
 

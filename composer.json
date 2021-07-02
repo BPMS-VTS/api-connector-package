@@ -1,6 +1,7 @@
 {
     "name": "jounger/api-connector",
-    "type": "library",
+    "description": "A plugin to build and config api and event handler",
+    "type": "project",
     "license": "MIT",
     "authors": [
         {
@@ -8,13 +9,13 @@
             "email": "nguyenvanan.12a8@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Jounger\\ApiConnector\\": "src/"
+            "Jounger\\ApiConnector\\": "src"
         }
     },
-    "require": {},
+    "require": {
+    },
     "extra": {
         "laravel": {
             "providers": [

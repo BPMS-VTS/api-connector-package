@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiConnector extends Model
 {
-    // protected $connection = 'processmaker';
+    // protected $table = 'api_connector';
 
     protected $fillable = [
         'name',

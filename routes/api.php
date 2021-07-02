@@ -2,9 +2,8 @@
 
 Route::group(
     [
-        'middleware' => ['auth:api', 'setlocale', 'bindings', 'sanitize'],
-        'prefix' => 'api/1.0',
-        'namespace' => 'Jounger\ApiConnector\Http\Controllers\Api',
+        'middleware' => ['auth:api', 'bindings'],
+        'namespace' => 'Api',
         'as' => 'api.',
     ], function() {
     Route::get('api_connectors', 'ApiConnectorsController@index')->name('api_connectors.index')->middleware('can:view-api_connectors');

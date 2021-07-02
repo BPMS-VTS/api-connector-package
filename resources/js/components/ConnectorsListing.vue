@@ -3,8 +3,8 @@
     <data-loading
       :for="/api_connectors\?page/"
       v-show="shouldShowLoader"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
+      :empty="'No Data Available'"
+      :empty-desc="''"
       empty-icon="noData"
     />
     <div v-show="!shouldShowLoader" class="card card-body table-card">
@@ -17,7 +17,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="'No Data Available'"
         pagination-path="meta"
       >
         <template slot="actions" slot-scope="props">
@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="$t('Edit')"
+                :title="'Edit'"
               >
                 <!-- v-if="permission.includes('edit-api_connectors')" -->
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="$t('Delete')"
+                :title="'Delete'"
               >
                 <!-- v-if="permission.includes('delete-api_connectors')" -->
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -46,8 +46,8 @@
         </template>
       </vuetable>
       <pagination
-        :single="$t('Variable')"
-        :plural="$t('Variables')"
+        :single="'Variable'"
+        :plural="'Variables'"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import datatableMixin from "../../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import datatableMixin from "../components/common/mixins/datatable";
+import dataLoadingMixin from "../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
@@ -77,23 +77,23 @@ export default {
       ],
       fields: [
         {
-          title: () => this.$t("Name"),
+          title: "Name",
           name: "name",
           sortField: "name",
         },
         {
-          title: () => this.$t("Description"),
+          title: "Description",
           name: "description",
           sortField: "description",
         },
         {
-          title: () => this.$t("Modified"),
+          title: "Modified",
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate",
         },
         {
-          title: () => this.$t("Created"),
+          title: "Created",
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate",
@@ -118,11 +118,8 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t(
-              "Are you sure you want to delete the api connector {{ name }} ?",
-              { name: data.name }
-            ),
+            "Caution!",
+            `Are you sure you want to delete the api connector ${data.name} ?`,
             "",
             () => {
               this.$emit("delete", data);

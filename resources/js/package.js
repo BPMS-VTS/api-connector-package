@@ -1,6 +1,12 @@
 import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import VModal from "vue-js-modal";
 import ConnectorsListing from "./components/ConnectorsListing";
-import { ApiBuilder, CustomModal } from '@bpms-vts/api-connector';
+import ApiConnector from '@bpms-vts/api-connector';
+
+Vue.use(ApiConnector);
+Vue.use(VModal);
+Vue.use(BootstrapVue);
 
 // Bootstrap our Connectors listing
 new Vue({
@@ -8,16 +14,12 @@ new Vue({
     data: {
         filter: ""
     },
-    components: {
-        ConnectorsListing,
-        ApiBuilder,
-        CustomModal,
-    },
+    components: { ConnectorsListing },
     methods: {
         deleteConnector(data) {
             ProcessMaker.apiClient.delete(`api_connectors/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert(this.$t("The api connector was deleted."), "success");
+                    ProcessMaker.alert("The api connector was deleted.", "success");
                     this.reload();
                 });
         },
