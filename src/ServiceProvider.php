@@ -7,6 +7,10 @@ use ProcessMaker\Package\Packages\Events\PackageEvent;
 use Jounger\ApiConnector\Http\Middleware\AddToMenus;
 use Jounger\ApiConnector\Listeners\PackageListener;
 
+// TEST
+use Illuminate\Support\Facades\Event;
+use ProcessMaker\Events\ScreenBuilderStarting;
+
 class ServiceProvider extends Provider
 {
     // Assign the default namespace for our controllers
@@ -56,15 +60,16 @@ class ServiceProvider extends Provider
             ->prefix('api/1.0')
             ->group(__DIR__ . '/../routes/api.php');
 
+        // TEST
+        Event::listen(ScreenBuilderStarting::class, function($event) {
+            $event->manager->addScript(mix('js/screen-builder-extend.js', 'vendor/api-connector'));
+        });
+
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/api-connector'),
             __DIR__.'/../resources/views/index.blade.php' => base_path('resources/views/vendor/api-connector/index.blade.php'),
 
-            __DIR__.'/../resources/views/tasks' => resource_path('views/tasks'),
-
-            __DIR__.'/../resources/js/components' => resource_path('js/vendor/api-connector/components'),
             __DIR__.'/../resources/js/mixins' => resource_path('js/vendor/api-connector/mixins'),
-            __DIR__.'/../resources/js/tasks' => resource_path('js/tasks'),
             __DIR__.'/../resources/js/processes/screen-builder' => resource_path('js/processes/screen-builder'),
         ], 'api-connector-plugin');
 
