@@ -1,8 +1,8 @@
 <template>
-  <div class="row mb-2 pl-2 pr-2">
-    <div class="col-md-6 col-sm-12 d-flex">
+  <div class="w-100 d-flex my-2 px-2" v-if="tablePagination && tablePagination.last_page > 0">
+    <div class="pt-1 mr-auto">
       <div
-        v-if="tablePagination && tablePagination.last_page > 1"
+        v-if="tablePagination"
         class="pagination"
       >{{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}</div>
       <div
@@ -10,8 +10,8 @@
         v-if="tablePagination && tablePagination.last_page < 1"
       >{{tablePagination.total}} {{title}}</div>
     </div>
-    <div class="col-md-6 col-sm-12 d-flex justify-content-end button-pagination">
-      <div v-show="tablePagination && tablePagination.last_page > 1" :class="css.wrapperClass">
+    <div class="justify-content-end button-pagination">
+      <div v-show="tablePagination" :class="css.wrapperClass">
         <div
           @click="loadPage(1)"
           :class="['pagination-nav-item', css.linkClass, isOnFirstPage ? css.disabledClass : '']"
@@ -25,8 +25,9 @@
           <i class="fas fa-angle-left"></i>
         </div>
         <template v-if="notEnoughPages">
-          <template v-for="n in totalPage">
+          <template v-for="(n, index) in totalPage">
             <div
+              :key="index"
               @click="loadPage(n)"
               :class="['pagination-nav-item', css.pageClass, isCurrentPage(n) ? css.activeClass : '']"
               v-html="n"
@@ -34,8 +35,9 @@
           </template>
         </template>
         <template v-else>
-          <template v-for="n in windowSize">
+          <template v-for="(n, index) in windowSize">
             <div
+              :key="index"
               @click="loadPage(windowStart+n-1)"
               :class="['pagination-nav-item', css.pageClass, isCurrentPage(windowStart+n-1) ? css.activeClass : '']"
               v-html="windowStart+n-1"
@@ -93,3 +95,39 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+@import "../../../sass/variables";
+.meta {
+  font-size: 12px;
+  color: #788793;
+}
+.meta {
+  font-size: 12px;
+  color: #788793;
+}
+.pagination-nav-item {
+  background-color: $body-bg;
+  width: 29px;
+  height: 29px;
+  margin: 1px;
+  font-size: 12px;
+  line-height: 29px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 2px;
+  color: #788793;
+  &.active {
+    background-color: #e9edf1;
+  }
+  &.disabled {
+    cursor: not-allowed;
+  }
+  &:hover {
+    background-color: white;
+  }
+}
+.pagination-nav-drop {
+  width: 40px;
+}
+</style>

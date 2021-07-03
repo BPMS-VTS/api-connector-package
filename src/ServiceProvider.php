@@ -67,7 +67,6 @@ class ServiceProvider extends Provider
 
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/api-connector'),
-            __DIR__.'/../resources/views/index.blade.php' => base_path('resources/views/vendor/api-connector/index.blade.php'),
 
             __DIR__.'/../resources/js/mixins' => resource_path('js/vendor/api-connector/mixins'),
             __DIR__.'/../resources/js/processes/screen-builder' => resource_path('js/processes/screen-builder'),

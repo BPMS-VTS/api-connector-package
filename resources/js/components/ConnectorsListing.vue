@@ -46,8 +46,8 @@
         </template>
       </vuetable>
       <pagination
-        :single="'Variable'"
-        :plural="'Variables'"
+        :single="'Connector'"
+        :plural="'Connectors'"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
