@@ -1,21 +1,65 @@
-import datatableMixin from "../../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import datatableMixin from "../components/common/mixins/datatable";
+import dataLoadingMixin from "../components/common/mixins/apiDataLoading";
+import ApiConnector from '@bpms-vts/api-connector';
+Vue.use(ApiConnector)
 
 export default {
+    template: `
+        <div id="modal-1a">
+            <custom-modal title="API Configuration" id="api-configuration-modal" ref="apiConfigurationModal">
+                <template slot-scope="{ data }">
+                    <api-configuration
+                        :screen="config"
+                        :config="apiConfiguration"
+                        :datasource="data"
+                        @filter="reload($event)"
+                        @open-edit="openApiBuilderModal($event)"
+                        >
+                    </api-configuration>
+                </template>
+            </custom-modal>
+            <custom-modal title="API Builder" id="api-builder-modal" ref="apiBuilderModal">
+                <template slot-scope="{ data }">
+                    <api-builder :data="data" @update="updateConnector"></api-builder>
+                </template>
+            </custom-modal>
+        </div>
+    `,
     mixins: [datatableMixin, dataLoadingMixin],
     data() {
         return {
-            apiConnectorOptionMenu: {
+            optionMenu: {
                 id: "button_connector",
                 type: "button",
-                title: this.$t("API Connector"),
-                name: this.$t("Connector"),
+                title: "API Connector",
+                name: "Connector",
                 variant: "secondary",
                 icon: "fas fa-database",
-                action: 'openApiConfigurationModal()'
+                action: () => { apiConnectorModals.openApiConfigurationModal() }
             },
             apiConfiguration: [],
             filter: "",
+            builder: null,
+        }
+    },
+    watch: {
+        builder: {
+            handler: function (builder) {
+                this.builder = builder;
+                this.apiConfiguration = this.apiConfig;
+            },
+        }
+    },
+    computed: {
+        apiConfig() {
+            const config = this.builder.screen.api_config;
+            return config ? config : [];
+        },
+        config() {
+            return this.builder.config;
+        },
+        screen() {
+            return this.builder.screen;
         }
     },
     methods: {
@@ -29,6 +73,31 @@ export default {
                     direction: "desc"
                 }
             ]);
+        },
+        updateConnectorConfiguration(exportScreen, onSuccess, onError) {
+            ProcessMaker.apiClient
+                .put("screens/" + this.screen.id, {
+                    title: this.screen.title,
+                    description: this.screen.description,
+                    type: this.screen.type,
+                    api_config: this.apiConfiguration,
+                })
+                .then(response => {
+                    if (exportScreen) {
+                        // do nothing
+                    }
+                    ProcessMaker.alert(this.$t("Successfully saved api configuration"), "success");
+                    ProcessMaker.EventBus.$emit("save-changes");
+                    if (typeof onSuccess === "function") {
+                        onSuccess(response);
+                    }
+                })
+                .catch(err => {
+                    if (typeof onError === "function") {
+                        onError(err);
+                    }
+                });
+
         },
         updateConnector(event) {
             if (typeof event.id === "undefined" || event.id === null) {
@@ -91,7 +160,4 @@ export default {
                 });
         }
     },
-    created() {
-        this.optionsMenu.find(x => x.id === "group_properties").items.push(this.apiConnectorOptionMenu);
-    }
 }

@@ -62,14 +62,12 @@ class ServiceProvider extends Provider
 
         // TEST
         Event::listen(ScreenBuilderStarting::class, function($event) {
-            $event->manager->addScript(mix('js/screen-extend.js', 'vendor/api-connector'));
+            $event->manager->addScript(mix('js/screen-builder-extend.js', 'vendor/api-connector'));
+            $event->manager->addScript(mix('js/screen-renderer-extend.js', 'vendor/api-connector'));
         });
 
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/api-connector'),
-
-            __DIR__.'/../resources/js/mixins' => resource_path('js/vendor/api-connector/mixins'),
-            __DIR__.'/../resources/js/processes/screen-builder' => resource_path('js/processes/screen-builder'),
         ], 'api-connector-plugin');
 
         $this->app['events']->listen(PackageEvent::class, PackageListener::class);
