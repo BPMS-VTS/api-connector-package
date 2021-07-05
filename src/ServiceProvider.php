@@ -70,6 +70,10 @@ class ServiceProvider extends Provider
             __DIR__.'/../public' => public_path('vendor/api-connector'),
         ], 'api-connector-plugin');
 
+        $this->publishes([
+            __DIR__ . '/../database/seeds' => database_path('seeds'),
+        ], 'api-connector-seeds');
+
         $this->app['events']->listen(PackageEvent::class, PackageListener::class);
     }
 }
