@@ -36,10 +36,10 @@ class ServiceProvider extends Provider
     public function boot()
     {
         // Load our views
-        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'api-connector-plugin');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'api-connector-views');
 
         // Load our translations
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'api-connector-plugin');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'api-connector-lang');
 
         // load migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
@@ -68,7 +68,7 @@ class ServiceProvider extends Provider
 
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/api-connector'),
-        ], 'api-connector-plugin');
+        ], 'api-connector-assets');
 
         $this->publishes([
             __DIR__ . '/../database/seeds' => database_path('seeds'),

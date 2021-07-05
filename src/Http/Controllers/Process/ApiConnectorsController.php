@@ -13,6 +13,6 @@ class ApiConnectorsController extends Controller
      */
     public function index()
     {
-        return view('api-connector-plugin::index');
+        return view('api-connector-views::index');
     }
 }
