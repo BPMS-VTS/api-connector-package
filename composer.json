@@ -1,7 +1,7 @@
 {
     "name": "jounger/api-connector",
     "description": "A plugin to build and config api and event handler",
-    "type": "project",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
