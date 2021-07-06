@@ -16,8 +16,8 @@ Artisan::command('api-connector:install', function () {
             $table->timestamps();
         });
     }
-    // add api_config column in screens table
-    if (Schema::hasTable('screens')) {
+    // add api_config column in screens table if doesn't exist
+    if (!Schema::hasColumn('screens', 'api_config')) {
         Schema::table('screens', function (Blueprint $table) {
             $table->json('api_config')->default('[]');
         });
