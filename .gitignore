@@ -2,7 +2,7 @@ vendor
 node_modules
 package-lock.json
 composer.lock
-public/*
+#public/*
 npm-debug.log
 yarn-error.log
 
