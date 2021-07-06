@@ -6,8 +6,6 @@ use Illuminate\Support\ServiceProvider as Provider;
 use ProcessMaker\Package\Packages\Events\PackageEvent;
 use Jounger\ApiConnector\Http\Middleware\AddToMenus;
 use Jounger\ApiConnector\Listeners\PackageListener;
-
-// TEST
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ScreenBuilderStarting;
 
@@ -35,44 +33,47 @@ class ServiceProvider extends Provider
      */
     public function boot()
     {
-        // Load our views
-        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'api-connector-views');
-
-        // Load our translations
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'api-connector-lang');
+        if ($this->app->runningInConsole()) {
+            require(__DIR__ . '/../routes/console.php');
+        } else {
+            // Menus for BPM are done through middleware. 
+            Route::pushMiddlewareToGroup('web', AddToMenus::class);
+    
+            // Assigning to the web middleware will ensure all other middleware assigned to 'web'
+            // will execute. If you wish to extend the user interface, you'll use the web middleware
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(__DIR__ . '/../routes/web.php');
+            
+            // If you wish to extend the api, be sure to utilize the api middleware. In your api 
+            // Routes file, you should prefix your routes with api/1.0
+            Route::middleware('api')
+                ->namespace($this->namespace)
+                ->prefix('api/1.0')
+                ->group(__DIR__ . '/../routes/api.php');
+    
+            Event::listen(ScreenBuilderStarting::class, function($event) {
+                $event->manager->addScript(mix('js/screen-builder-extend.js', 'vendor/api-connector'));
+                $event->manager->addScript(mix('js/screen-renderer-extend.js', 'vendor/api-connector'));
+            });
+        }
 
         // load migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        // Menus for BPM are done through middleware. 
-        Route::pushMiddlewareToGroup('web', AddToMenus::class);
+        // Load our views
+        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'api-connector');
 
-        // Assigning to the web middleware will ensure all other middleware assigned to 'web'
-        // will execute. If you wish to extend the user interface, you'll use the web middleware
-        Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(__DIR__ . '/../routes/web.php');
-        
-        // If you wish to extend the api, be sure to utilize the api middleware. In your api 
-        // Routes file, you should prefix your routes with api/1.0
-        Route::middleware('api')
-            ->namespace($this->namespace)
-            ->prefix('api/1.0')
-            ->group(__DIR__ . '/../routes/api.php');
-
-        // TEST
-        Event::listen(ScreenBuilderStarting::class, function($event) {
-            $event->manager->addScript(mix('js/screen-builder-extend.js', 'vendor/api-connector'));
-            $event->manager->addScript(mix('js/screen-renderer-extend.js', 'vendor/api-connector'));
-        });
+        // Load our translations
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'api-connector');
 
         $this->publishes([
             __DIR__.'/../public' => public_path('vendor/api-connector'),
-        ], 'api-connector-assets');
+        ], 'api-connector');
 
         $this->publishes([
             __DIR__ . '/../database/seeds' => database_path('seeds'),
-        ], 'api-connector-seeds');
+        ], 'api-connector');
 
         $this->app['events']->listen(PackageEvent::class, PackageListener::class);
     }

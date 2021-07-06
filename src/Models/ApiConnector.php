@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiConnector extends Model
 {
-    // protected $table = 'api_connector';
+    protected $table = 'api_connectors';
 
     protected $fillable = [
         'name',
