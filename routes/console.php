@@ -27,5 +27,26 @@ Artisan::command('api-connector:install', function () {
         '--force' => true
     ]);
 
+    Artisan::call('db:seed', [
+        '--class' => 'ApiConnectorPermissionSeeder'
+    ]);
+
+    Artisan::call('db:seed', [
+        '--class' => 'ApiConnectorGroupSeeder'
+    ]);
+
     $this->info('Package API Connector has been installed');
 })->describe('Installs the required js files and table in DB');
+
+Artisan::command('api-connector:uninstall', function () {
+    // drop table api_connectors
+    Schema::dropIfExists('api_connectors');
+    // drop column api_config
+    if (Schema::hasColumn('screens', 'api_config')) {
+        Schema::table('screens', function (Blueprint $table) {
+            $table->dropColumn('api_config');
+        });
+    }
+
+    $this->info('Package API Connector has been uninstalled');
+})->describe('Uninstalls the required js files and table in DB');
