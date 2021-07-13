@@ -27,13 +27,9 @@ Artisan::command('api-connector:install', function () {
         '--force' => true
     ]);
 
-    Artisan::call('db:seed', [
-        '--class' => 'ApiConnectorPermissionSeeder'
-    ]);
-
-    Artisan::call('db:seed', [
-        '--class' => 'ApiConnectorGroupSeeder'
-    ]);
+    // you're required to run seeds by manual
+    // don't forget run `composer dump-autoload` first
+    // then `php artisan db:seed --class=<NameOfSeederClass>
 
     $this->info('Package API Connector has been installed');
 })->describe('Installs the required js files and table in DB');

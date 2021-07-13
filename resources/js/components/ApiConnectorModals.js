@@ -5,7 +5,7 @@ Vue.use(ApiConnector)
 
 export default {
     template: `
-        <div id="modal-1a">
+        <div id="api-connector-modal">
             <custom-modal title="API Configuration" id="api-configuration-modal" ref="apiConfigurationModal">
                 <template slot-scope="{ data }">
                     <api-configuration
