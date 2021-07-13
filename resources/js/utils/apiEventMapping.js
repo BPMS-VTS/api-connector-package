@@ -1,3 +1,5 @@
+const Mustache = require('mustache');
+
 function convertArrayToObject(list) {
     return list.reduce(function (result, item) {
         if (item.key) result[item.key] = item.value;
@@ -52,7 +54,7 @@ export function setupApiEventMapping(configuration, screen) {
     const restfulAPI = api.config.options.restful;
     const options = {
         method: api.config.method,
-        url: api.config.options.endpoint,
+        url: Mustache.render(api.config.options.endpoint, screen.data),
         params: convertArrayToObject(restfulAPI.param),
         auth: convertArrayToObject(restfulAPI.authorization),
         headers: convertArrayToObject(restfulAPI.header),
