@@ -74,12 +74,27 @@ export default {
                 }
             ]);
         },
-        updateConnectorConfiguration(exportScreen, onSuccess, onError) {
+        async filterComponent(items) {
+            return items.reduce((a, item) => {
+                if (item.items) return this.filterComponent(item.items);
+                if (typeof item.config === "undefined")
+                    return this.filterComponent(item);
+                if (
+                    typeof item.config.defaultValue !== "undefined" &&
+                    !item.config.defaultValue.value
+                )
+                    delete item.config.defaultValue;
+                return a;
+            }, []);
+        },
+        async updateConnectorConfiguration(exportScreen, onSuccess, onError) {
+            await this.filterComponent(this.screen.config);
             ProcessMaker.apiClient
                 .put("screens/" + this.screen.id, {
                     title: this.screen.title,
                     description: this.screen.description,
                     type: this.screen.type,
+                    config: this.screen.config,
                     api_config: this.apiConfiguration,
                 })
                 .then(response => {
