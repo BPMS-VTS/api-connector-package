@@ -15,14 +15,16 @@ window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
             if (domEventLevel.includes(event) && componentType.includes(component["editor-control"])) {
                 window.addEventListener(event, () => setupApiEventMapping(val, screen), false);
             } else {
-                window.onload = () => {
+                document.addEventListener('readystatechange', () => {
                     const selector = `[data-cy="screen-field-${component.config.name}"]`;
                     const dom = document.querySelector(selector);
+                    console.log('before_bind', selector, val.config.api[0].name)
                     dom.addEventListener(event, (e) => {
+                        console.log('after_bind', selector)
                         setupApiEventMapping(val, screen);
                         e.stopPropagation();
                     }, false);
-                }
+                })
             }
         });
     }
