@@ -56,13 +56,33 @@ export default {
             return config ? config : [];
         },
         config() {
-            return this.builder.config;
+            const config = _.cloneDeep(this.builder.config);
+            this.builder.computed.forEach((el) => {
+                config[0].items.splice(0, 0, this.convertComputedToComponent(el));
+            })
+            return config;
         },
         screen() {
             return this.builder.screen;
         }
     },
     methods: {
+        convertComputedToComponent(computed) {
+            const template = {
+                component: 'FormDataVariable',
+                config: {
+                    icon: "fas fa-flask",
+                    label: computed.name,
+                    name: computed.property,
+                    readonly: true,
+                },
+                inspector: [],
+                'editor-component': "FormComputedVariable",
+                'editor-control': "FormDataVariable",
+                label: "Computed Variable"
+            }
+            return template;
+        },
         reload(filter) {
             if (filter) {
                 this.filter = filter.name;
