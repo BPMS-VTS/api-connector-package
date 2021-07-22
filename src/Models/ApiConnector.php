@@ -13,6 +13,7 @@ class ApiConnector extends Model
         'name',
         'description',
         'config',
+        'request',
     ];
 
     public static function rules($existing = null)

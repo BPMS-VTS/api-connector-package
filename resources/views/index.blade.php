@@ -43,7 +43,11 @@
         @can('create-api_connectors')
         <custom-modal title="API Builder" id="api-builder-modal" ref="apiBuilderModal">
             <template slot-scope="{ data }">
-                <api-builder :data="data" @update="updateConnector"
+                <api-builder
+                    :data="data" 
+                    :datasource="datasource"
+                    :filter="connectionFilter"
+                    @update="updateConnector"
                 ></api-builder>
             </template>
         </custom-modal>

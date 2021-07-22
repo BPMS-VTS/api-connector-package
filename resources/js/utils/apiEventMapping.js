@@ -1,6 +1,6 @@
 const Mustache = require('mustache');
 
-function convertArrayToObject(list) {
+export function convertArrayToObject(list) {
     return list.reduce(function (result, item) {
         if (item.key) result[item.key] = item.value;
         return result;
@@ -50,14 +50,40 @@ export function setupApiEventMapping(configuration, screen) {
     const api = val.config.api[0];
 
     if (typeof api === "undefined") return;
+    const optionsRender = Mustache.render(api.request, screen.data);
+    const options = JSON.parse(optionsRender)
+    if (options.type === "query") {
+        options.method = "POST";
+    }
+    delete options.type;
+    delete options.name;
+    requestMethodMapping(api.request.method, options, val.config);
+    requestMapping(val.config.options.request, options, screen);
+
+    ProcessMaker.apiClient(options)
+        .then(response => {
+            responseMapping(val.config.options.response, response, screen);
+        })
+        .catch(error => {
+            if (error.response.status && error.response.status === 422) {
+                ProcessMaker.alert(error.response.data.error, "danger");
+            }
+        });
+}
+
+export function setupApiEventMappingOld(configuration, screen) {
+    const val = configuration;
+    const api = val.config.api[0];
+
+    if (typeof api === "undefined") return;
 
     const restfulAPI = api.config.options.restful;
     const options = {
         method: api.config.method,
         url: Mustache.render(api.config.options.endpoint, screen.data),
-        params: convertArrayToObject(restfulAPI.param),
-        auth: convertArrayToObject(restfulAPI.authorization),
-        headers: convertArrayToObject(restfulAPI.header),
+        params: convertArrayToObject(restfulAPI.params),
+        auth: convertArrayToObject(restfulAPI.auth),
+        headers: convertArrayToObject(restfulAPI.headers),
         data: convertArrayToObject(restfulAPI.body),
     }
 

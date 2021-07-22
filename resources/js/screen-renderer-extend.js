@@ -18,9 +18,7 @@ window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
                 document.addEventListener('readystatechange', () => {
                     const selector = `[data-cy="screen-field-${component.config.name}"]`;
                     const dom = document.querySelector(selector);
-                    console.log('before_bind', selector, val.config.api[0].name)
                     dom.addEventListener(event, (e) => {
-                        console.log('after_bind', selector)
                         setupApiEventMapping(val, screen);
                         e.stopPropagation();
                     }, false);

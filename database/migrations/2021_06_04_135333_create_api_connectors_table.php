@@ -18,6 +18,7 @@ class CreateApiConnectorsTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->json('config')->nullable();
+            $table->json('request')->nullable();
             $table->string('component')->default('Datasource');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->timestamps();
