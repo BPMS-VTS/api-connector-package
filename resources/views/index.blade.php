@@ -46,7 +46,7 @@
                 <api-builder
                     :data="data" 
                     :datasource="datasource"
-                    :filter="connectionFilter"
+                    :filter="datasourceFilter"
                     @update="updateConnector"
                 ></api-builder>
             </template>

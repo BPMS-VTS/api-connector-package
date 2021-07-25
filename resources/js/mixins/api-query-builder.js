@@ -11,7 +11,7 @@ export default {
                 if (typeof item.config.name !== "undefined") {
                     const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
                     const query = item.config.query;
-                    Object.keys(item).forEach(function (key) { delete item[key]; });
+                    Object.keys(item).forEach(function(key) { delete item[key]; });
                     item.column = column;
                     item.operator = query.operator;
                     item.value = query.value;
@@ -22,19 +22,15 @@ export default {
         async buildApiRequest(config) {
             const structure = config;
             const builder = {};
-            builder.method = structure.method;
             builder.name = structure.name;
             builder.type = structure.type;
             if (builder.type === queryBuilder.TYPE) {
                 const data = {};
                 const options = structure.options.query;
-                data.method = builder.method;
+                data.method = options.method;
                 data.table = `${options.database}.${options.table}`;
-                // if (options.alias) {
-                //     data.table = `${data.table} AS ${options.alias}`
-                // }
                 // SELECT
-                data.select = options.select.reduce(function (result, item) {
+                data.select = options.select.reduce(function(result, item) {
                     if (item.config.name) {
                         const query = item.config.query;
                         const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
@@ -46,14 +42,23 @@ export default {
                     }
                     return result;
                 }, []);
+                // VALUE
+                data.value = options.value.reduce(function(result, item) {
+                    if (item.config.name) {
+                        const query = item.config.query;
+                        const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
+                        const data = {};
+                        data.column = column;
+                        data.value = query.mapping;
+                        result.push(data);
+                    }
+                    return result;
+                }, []);
                 // JOIN
-                data.join = options.join.reduce(function (result, item) {
+                data.join = options.join.reduce(function(result, item) {
                     const query = item.config.query;
                     if (query.type) {
                         const table = `${query.database}.${query.table}`;
-                        // if (query.alias) {
-                        //     table = `${table} AS ${options.alias}`
-                        // }
                         const leftConfig = query.leftCol[0].config;
                         const rightConfig = query.rightCol[0].config;
                         const leftCol = `${leftConfig.schema}.${leftConfig.table}.${leftConfig.name}`;
@@ -75,7 +80,7 @@ export default {
                 data.where.condition = cloneWhere.condition;
                 data.where.rules = cloneWhere.rules;
                 // GROUP BY
-                data.groupby = options.groupby.reduce(function (result, item) {
+                data.groupby = options.groupby.reduce(function(result, item) {
                     if (item.config.name) {
                         const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
                         result.push(column)
@@ -83,7 +88,7 @@ export default {
                     return result;
                 }, []);
                 // HAVING
-                data.having = options.having.reduce(function (result, item) {
+                data.having = options.having.reduce(function(result, item) {
                     if (item.config.name) {
                         const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
                         const query = item.config.query;
@@ -99,7 +104,7 @@ export default {
                     return result;
                 }, []);
                 // ORDER BY
-                data.orderby = options.orderby.reduce(function (result, item) {
+                data.orderby = options.orderby.reduce(function(result, item) {
                     if (item.config.name) {
                         const column = `${item.config.schema}.${item.config.table}.${item.config.name}`;
                         const query = item.config.query;
@@ -110,10 +115,12 @@ export default {
                     }
                     return result;
                 }, []);
+                builder.method = "POST";
                 builder.url = queryBuilder.ENDPOINT;
                 builder.data = data;
             } else {
                 const options = structure.options.restful;
+                builder.method = options.method;
                 builder.url = options.endpoint;
                 builder.params = convertArrayToObject(options.params);
                 builder.auth = convertArrayToObject(options.auth);

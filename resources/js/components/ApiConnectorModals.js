@@ -1,7 +1,7 @@
 import datatableMixin from "../components/common/mixins/datatable";
 import dataLoadingMixin from "../components/common/mixins/apiDataLoading";
-import ApiConnector from '@bpms-vts/api-connector';
-Vue.use(ApiConnector)
+import datasourceBuilder from "../mixins/datasource-builder";
+import { ApiBuilder, ApiConfiguration, CustomModal } from '@bpms-vts/api-connector';
 
 export default {
     template: `
@@ -14,18 +14,23 @@ export default {
                         :datasource="data"
                         @filter="reload($event)"
                         @open-edit="openApiBuilderModal($event)"
-                        >
-                    </api-configuration>
+                    ></api-configuration>
                 </template>
             </custom-modal>
             <custom-modal title="API Builder" id="api-builder-modal" ref="apiBuilderModal">
                 <template slot-scope="{ data }">
-                    <api-builder :data="data" @update="updateConnector"></api-builder>
+                    <api-builder
+                        :data="data"
+                        :datasource="datasource"
+                        :filter="datasourceFilter"
+                        @update="updateConnector"
+                    ></api-builder>
                 </template>
             </custom-modal>
         </div>
     `,
-    mixins: [datatableMixin, dataLoadingMixin],
+    components: { ApiBuilder, ApiConfiguration, CustomModal },
+    mixins: [datatableMixin, dataLoadingMixin, datasourceBuilder],
     data() {
         return {
             optionMenu: {
@@ -44,7 +49,7 @@ export default {
     },
     watch: {
         builder: {
-            handler: function (builder) {
+            handler: function(builder) {
                 this.builder = builder;
                 this.apiConfiguration = this.apiConfig;
             },
@@ -87,12 +92,10 @@ export default {
             if (filter) {
                 this.filter = filter.name;
             }
-            this.dataManager([
-                {
-                    field: "updated_at",
-                    direction: "desc"
-                }
-            ]);
+            this.dataManager([{
+                field: "updated_at",
+                direction: "desc"
+            }]);
         },
         async filterComponent(items) {
             return items.reduce((a, item) => {
@@ -137,11 +140,11 @@ export default {
         updateConnector(event) {
             if (typeof event.id === "undefined" || event.id === null) {
                 ProcessMaker.apiClient.post('api_connectors', {
-                    name: event.name,
-                    description: event.description,
-                    config: JSON.stringify(event.config),
-                    component: event.component,
-                })
+                        name: event.name,
+                        description: event.description,
+                        config: JSON.stringify(event.config),
+                        component: event.component,
+                    })
                     .then(response => {
                         ProcessMaker.alert("The api connector was created.", 'success');
                         this.$refs.apiBuilderModal.hide();
@@ -175,6 +178,7 @@ export default {
         },
         fetch() {
             this.loading = true;
+            this.perPage = 100;
             // Load from our api client
             ProcessMaker.apiClient
                 .get(

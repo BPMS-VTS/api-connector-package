@@ -17,52 +17,89 @@ class QueryBuilderController extends Controller
     {
         // convert json to object
         $data = json_decode($request->getContent(), true);
+
         $method = $data['method'];
         $table = $data['table'];
+
         // QUERY INIT
         $query = \DB::table($table);
-        // SELECT clause
-        $select = $data['select'];
 
-        if ($method == 'GET' && count($select) > 0) {
-            $query->select($select);
-        }
-        // JOIN clause
-        $join = $data['join'];
-        foreach ($join as $val) {
-            $table = $val['table'];
-            $left = $val['left'];
-            $right = $val['right'];
-            $query->join($table, $left, '=', $right);
-        }
-        // WHERE clause
-        $where = $data['where'];
-        if (count($where['rules']) > 0) {
-            $clause = 'where';
-            $this->queryBuilder($query, $clause, $where);
-        }
-        // GROUP BY clause
-        $groupby = $data['groupby'];
-        if (count($groupby) > 0) {
-            $query->groupBy($groupby);
-            // HAVING clause
-            // TODO: resolve having clause like as where clause
-            $having = $data['having'];
-            foreach ($having as $val) {
-                $clause = 'having';
-                $this->queryOperatorDictionary($query, $clause, $val);
+        if ($method == 'SELECT' || $method == 'UPDATE' || $method == 'DELETE') {
+            // JOIN clause
+            $join = $data['join'];
+            foreach ($join as $val) {
+                $table = $val['table'];
+                $left = $val['left'];
+                $right = $val['right'];
+                $query->join($table, $left, '=', $right);
+            }
+            // WHERE clause
+            $where = $data['where'];
+            if (count($where['rules']) > 0) {
+                $clause = 'where';
+                $this->queryBuilder($query, $clause, $where);
             }
         }
-        // ORDER BY clause
-        $orderby = $data['orderby'];
-        foreach ($orderby as $val) {
-            $column = $val['column'];
-            $direction = $val['direction'];
-            $query->orderBy($column, $direction);
+
+        if ($method == 'SELECT') {
+            // SELECT clause
+            $select = $data['select'];
+            if (count($select) > 0) {
+                $query->select($select);
+            }
+
+            // GROUP BY clause
+            $groupby = $data['groupby'];
+            if (count($groupby) > 0) {
+                $query->groupBy($groupby);
+                // HAVING clause
+                // TODO: resolve having clause like as where clause
+                $having = $data['having'];
+                foreach ($having as $val) {
+                    $clause = 'having';
+                    $this->queryOperatorDictionary($query, $clause, $val);
+                }
+            }
+
+            // ORDER BY clause
+            $orderby = $data['orderby'];
+            foreach ($orderby as $val) {
+                $column = $val['column'];
+                $direction = $val['direction'];
+                $query->orderBy($column, $direction);
+            }
         }
+
+        $value_array = array();
+        if ($method == 'INSERT' || $method == 'UPDATE') {
+            $values = $data['value']; // data insert into or update set
+            foreach ($values as $val) {
+                $column = $val['column'];
+                $value = $val['value'];
+                $value_array += [$column => $value];
+            }
+        }
+
         // QUERY RESULT
-        // return $query->toSql(); // only for testing
-        $result = $query->get();
+        $result = null;
+        switch ($method) {
+            case 'SELECT':
+                $result = $query->get();
+                break;
+            case 'UPDATE':
+                $result = $query->update($value_array);
+                break;
+            case 'INSERT':
+                $result = $query->insert($value_array);
+                break;
+            case 'DELETE':
+                $result = $query->delete();
+                break;
+
+            default:
+                $result = $query->toSql(); // only for testing
+                break;
+        }
         return $result;
     }
 
