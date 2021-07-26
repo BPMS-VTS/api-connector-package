@@ -87,6 +87,15 @@ class QueryBuilderController extends Controller
                 $direction = $val['direction'];
                 $query->orderBy($column, $direction);
             }
+
+            // PAGINATION
+            $page = $request->input('page', 1);
+            $per_page = $request->input('per_page', 10);
+            if ($page < 1) $page = 1;
+            if ($per_page < 1) $per_page = 1;
+            $skip = ($page - 1) * $per_page;
+            $take = $per_page;
+            $query->skip($skip)->take($take);
         }
 
         $value_array = array();
