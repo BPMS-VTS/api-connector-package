@@ -31,7 +31,26 @@ class QueryBuilderController extends Controller
                 $table = $val['table'];
                 $left = $val['left'];
                 $right = $val['right'];
-                $query->join($table, $left, '=', $right);
+                $type = $val['type'];
+                switch ($type) {
+                    case 'inner_join':
+                        $query->join($table, $left, '=', $right);
+                        break;
+                    case 'left_outer_join':
+                        $query->leftJoin($table, $left, '=', $right);
+                        break;
+                    case 'right_outer_join':
+                        $query->rightJoin($table, $left, '=', $right);
+                        break;
+                    case 'full_outer_join':
+                        // TODO: Full outer join
+                        // currently not supported
+                        // Ref: https://stackoverflow.com/a/41662283/10597062
+                        break;
+
+                    default:
+                        break;
+                }
             }
             // WHERE clause
             $where = $data['where'];
